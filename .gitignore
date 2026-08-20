@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+.virtual_documents/
+.jupyter-runtime/
+
+# Competition data (download separately from Kaggle)
+train.parquet/
+lags.parquet
+features.csv
+responders.csv
+Data info.txt
+
+# Local analysis artifacts and source working files
+/*.ipynb
+/*.pptx
+/*.docx
+.docx_review/
+project-skills/
+
+# Generated outputs
+artifacts/
+models/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
