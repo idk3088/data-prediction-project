@@ -105,4 +105,3 @@ Phase 2 will measure missingness and feature availability over time before any i
 ## Disclaimer
 
 This is an educational research project and not financial advice. Jane Street and Kaggle retain their respective rights to the competition and dataset.
-
