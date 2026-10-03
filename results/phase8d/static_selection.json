@@ -1,0 +1,17 @@
+{
+  "candidate": "D1_c2_plus_depth6",
+  "kind": "tree",
+  "prediction_columns": [
+    "pred_cs_seed42",
+    "pred_cs_seed1042",
+    "pred_cs_seed2042",
+    "pred_cs_depth8",
+    "pred_cs_depth6"
+  ],
+  "selection_data": "rolling A->B and A+B->C only",
+  "baseline": "B_c2_100",
+  "accepted_over_c2": true,
+  "mean_weighted_r2": 0.01010800804311901,
+  "minimum_weighted_r2": 0.009030760188479259,
+  "part9_used": false
+}

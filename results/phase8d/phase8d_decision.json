@@ -1,0 +1,42 @@
+{
+  "selected_static": {
+    "candidate": "D1_c2_plus_depth6",
+    "kind": "tree",
+    "prediction_columns": [
+      "pred_cs_seed42",
+      "pred_cs_seed1042",
+      "pred_cs_seed2042",
+      "pred_cs_depth8",
+      "pred_cs_depth6"
+    ],
+    "selection_data": "rolling A->B and A+B->C only",
+    "baseline": "B_c2_100",
+    "accepted_over_c2": true,
+    "mean_weighted_r2": 0.01010800804311901,
+    "minimum_weighted_r2": 0.009030760188479259,
+    "part9_used": false
+  },
+  "selected_online": {
+    "selection_data": "A-C only; rolling B and C scores",
+    "selected_candidate": "online_10_calibrated",
+    "online_accepted": true,
+    "calibration_accepted": true,
+    "selected_interval_dates": 10,
+    "tested_intervals": [
+      10,
+      20,
+      40
+    ],
+    "calibration_min_dates": 20,
+    "calibration_clip": [
+      0.8,
+      1.2
+    ],
+    "requires_revealed_prior_labels": true,
+    "part9_used": false
+  },
+  "accepted_over_phase8c": true,
+  "acceptance_rule": "D-E mean and minimum must both improve over the saved Phase 8C current best",
+  "evaluation_note": "D-E were previously inspected; descriptive confirmation only",
+  "part9_used": false
+}

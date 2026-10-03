@@ -1,0 +1,19 @@
+{
+  "selection_data": "A-C only; rolling B and C scores",
+  "selected_candidate": "online_10_calibrated",
+  "online_accepted": true,
+  "calibration_accepted": true,
+  "selected_interval_dates": 10,
+  "tested_intervals": [
+    10,
+    20,
+    40
+  ],
+  "calibration_min_dates": 20,
+  "calibration_clip": [
+    0.8,
+    1.2
+  ],
+  "requires_revealed_prior_labels": true,
+  "part9_used": false
+}

@@ -1,0 +1,14 @@
+{
+  "selection_data": "rolling A->B and A+B->C only",
+  "baseline": "B_c2_100",
+  "selected_candidate": "B_c2_075",
+  "selected_c2_alpha": 0.75,
+  "accepted": true,
+  "tested_alphas": [
+    0.5,
+    0.75,
+    0.9,
+    1.0
+  ],
+  "part9_used": false
+}

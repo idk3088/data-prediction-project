@@ -1,66 +1,90 @@
 # Jane Street Real-Time Market Data Forecasting
 
-A leakage-aware, reproducible research project for the Jane Street Real-Time Market Data Forecasting competition. The modeling target is `responder_6`, evaluated with the competition's sample-weighted, zero-mean \(R^2\) metric.
+A leakage-aware, time-ordered research pipeline for the Jane Street Real-Time Market Data Forecasting competition. The project predicts `responder_6` and evaluates predictions with the competition's sample-weighted, zero-mean \(R^2\).
 
-This repository currently contains the research contract and structural data audit only. Exploratory analysis and model training will be added in later phases after the data assumptions are verified.
+The repository now contains the complete research notebook, from data validation and EDA through chronological LightGBM experiments, multi-responder tests, regularization, stacking, cross-sectional features, online updating, and the final locked Phase 8D comparison.
 
-## Project Status
+## Final Research Result
 
-| Phase | Scope | Status |
-|---|---|---|
-| Phase 0 | Research contract, target, metric, and leakage rules | Complete |
-| Phase 1 | Data inventory and structural validation | Complete |
-| Phase 2 | Missingness and feature availability analysis | Not published yet |
-| Phase 3+ | EDA, time-based validation, baselines, and modeling | Planned |
+The accepted Phase 8D pipeline combines:
+
+- a cross-sectional LightGBM ensemble with multiple seeds and tree depths;
+- a no-intercept meta-model fitted only on earlier out-of-fold predictions;
+- a 10-date online update interval using previously revealed labels;
+- leakage-safe calibration fitted only on prior dates.
+
+| Evaluation | Weighted zero-mean \(R^2\) |
+|---|---:|
+| Development A-C, selected online rule | 0.011395 |
+| Late-period Fold D | 0.009634 |
+| Late-period Fold E | 0.010263 |
+| **Late-period D-E mean** | **0.009949** |
+| Previous Phase 8C D-E mean | 0.009884 |
+
+Phase 8D improved both the mean and worst-fold D-E score relative to Phase 8C and was therefore accepted under the predeclared rule. The A-C result is a development score, not the final generalization estimate. D-E had already been inspected in earlier phases, so the D-E comparison is reported as descriptive confirmation rather than a pristine unbiased test. Partition 9 remains unused by Phase 8D.
+
+The saved decision and fold-level results are available in [`results/phase8d`](results/phase8d).
 
 ## Prediction Contract
 
-- **Target:** predict `responder_6`.
-- **Unit of observation:** one anonymized instrument (`symbol_id`) at one `date_id` and `time_id`.
-- **Metric:** sample-weighted, zero-mean \(R^2\):
+- **Target:** `responder_6`.
+- **Observation:** one anonymized instrument (`symbol_id`) at one `date_id` and `time_id`.
+- **Metric:**
 
 $$
 R^2 = 1 - \frac{\sum_i w_i(y_i-\hat{y}_i)^2}{\sum_i w_i y_i^2}
 $$
 
-- **Information rule:** use only information available when the prediction is made.
-- **Validation rule:** train on earlier dates, validate on later dates, and preserve the most recent period as a sealed holdout.
+- **Information rule:** current and future responders are unavailable at prediction time. Online updates use only labels already revealed from earlier dates.
+- **Validation rule:** train on earlier dates, validate on later dates, preserve chronological order, and fit every learned transformation inside the relevant training period.
 
-## Verified Phase 1 Findings
+## Project Workflow
 
-- 10 Parquet partitions.
-- 47,127,338 training rows.
-- Approximately 11.45 GiB on disk.
-- 92 columns: 4 identifier/weight columns, 79 features, and 9 responders.
-- Identical Arrow schema across all partitions.
-- Continuous `date_id` coverage from 0 through 1698, with no partition gaps or overlaps.
-- No duplicate `(date_id, time_id, symbol_id)` keys within any partition.
-- Rows are monotonically ordered by `date_id` and then `time_id` in every partition.
+| Phase | Scope | Status |
+|---|---|---|
+| 0-2 | Research contract, inventory, integrity, missingness | Complete |
+| 3 | Time-stratified EDA and stability analysis | Complete |
+| 4 | Chronological LightGBM baseline and feature screening | Complete |
+| 5 | Leakage-safe feature engineering | Complete |
+| 6 | Regime, volatility, window, and ensemble analysis | Complete |
+| 7-7B | PCA, multi-responder learning, online validation, regularization | Complete |
+| 8-8D | Stacking, cross-sectional context, recency, combined and final locked pipeline | Complete |
 
-These checks support partition-wise, column-selective processing and chronological validation in later phases.
+## Main Findings
+
+- The training set contains 47,127,338 rows across 10 chronological Parquet partitions.
+- Feature availability changes over time; columns that are entirely missing in early partitions can become available later and must not be removed using one-partition evidence.
+- The panel is unbalanced across symbols and dates, while every observed symbol-date pair has a complete intraday grid.
+- The intraday grid expands from 849 to 968 time steps beginning at `date_id == 677`.
+- Sample weights are finite and strictly positive, and their distribution changes chronologically.
+- Chronological validation is materially different from random row splitting and is required throughout the project.
+- Shallower and diversified LightGBM components, OOF stacking, and prior-label online adaptation improve stability, but performance still varies across time regimes.
 
 ## Repository Structure
 
 ```text
 .
 ├── notebooks/
-│   └── 01_research_contract_and_data_inventory.ipynb
+│   ├── 01_research_contract_and_data_inventory.ipynb
+│   └── 02_full_research_and_modeling_pipeline.ipynb
+├── results/
+│   └── phase8d/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
 
-The original competition data, local working notebooks, presentations, and unfinished EDA are intentionally excluded from version control.
+The final notebook retains its executed outputs so the reported analysis can be reviewed without rerunning the full 47-million-row workflow. Personal filesystem paths in the public copy have been replaced with `<PROJECT_ROOT>`.
 
 ## Setup
 
-This project was prepared with Python 3.12.4.
+The reported notebook was run with Python 3.12.4.
 
 ```bash
 python -m venv .venv
 ```
 
-Activate the environment, then install the dependencies:
+Activate the environment and install the dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -68,9 +92,9 @@ python -m pip install -r requirements.txt
 
 ## Data
 
-Download the data from the [official Kaggle competition page](https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting). Competition data is not redistributed in this repository.
+Download the data from the [official Kaggle competition page](https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting). Competition data is not redistributed here.
 
-Place the partitioned training dataset at the repository root with this layout:
+Place the partitioned training data at the repository root:
 
 ```text
 train.parquet/
@@ -80,7 +104,7 @@ train.parquet/
 └── partition_id=9/part-9.parquet
 ```
 
-## Run the Notebook
+## Running the Project
 
 Start Jupyter from the repository root:
 
@@ -88,20 +112,34 @@ Start Jupyter from the repository root:
 jupyter lab
 ```
 
-Then open `notebooks/01_research_contract_and_data_inventory.ipynb` and run the cells in order. The audit reads Parquet metadata or selected columns instead of loading the entire dataset into memory.
+Open [`notebooks/02_full_research_and_modeling_pipeline.ipynb`](notebooks/02_full_research_and_modeling_pipeline.ipynb). The notebook uses `Path.cwd()` as the project root, so Jupyter should be started from this repository.
 
-## Research Principles
+The notebook contains explicit `RUN_...` switches around expensive one-time computations. They are saved as `False` to prevent accidental multi-hour reruns. For a full recomputation:
 
-- Treat time order as part of the problem definition.
-- Prevent target leakage and future-fitted preprocessing.
-- Fit every learned transformation on training dates only.
-- Compare models with the exact weighted competition metric.
-- Keep the final holdout sealed until model-selection decisions are complete.
+1. run the notebook in chronological order;
+2. enable each documented switch only for its corresponding cell;
+3. run that cell once and save its artifact;
+4. return the switch to `False` before continuing;
+5. do not use later confirmation periods to retune an earlier selection.
 
-## Next Step
+The Phase 8D run-order section in the notebook gives the exact dependency order for the final pipeline.
 
-Phase 2 will measure missingness and feature availability over time before any imputation strategy or predictive model is selected.
+## Reproducibility and Leakage Controls
+
+- No random row split is used for model selection.
+- Feature selection, calibration, PCA, stacking weights, and model fitting use training dates only.
+- OOF meta-models are trained on earlier folds and evaluated on the next chronological fold.
+- Lagged or rolling information is grouped by `symbol_id` and ordered by `date_id`, then `time_id`.
+- Online updating assumes that prior-date responder labels have been revealed; this assumption must hold in the deployment environment.
+- The final Phase 8D comparison does not use partition 9.
+
+## Limitations
+
+- D-E confirmation is descriptive because those periods had been examined in earlier research phases.
+- The final online pipeline does not yet save a strictly comparable end-to-end training \(R^2\); component training scores and temporal validation scores are available, but a single train-validation spread would require rerunning the locked pipeline with additional diagnostics.
+- Reproducing all experiments requires substantial memory, disk space, and runtime.
+- The online improvement depends on access to previously revealed labels.
 
 ## Disclaimer
 
-This is an educational research project and not financial advice. Jane Street and Kaggle retain their respective rights to the competition and dataset.
+This is an educational research project, not financial advice. Jane Street and Kaggle retain their respective rights to the competition and dataset.

@@ -23,6 +23,11 @@ Data info.txt
 /*.docx
 .docx_review/
 project-skills/
+/.codex_temp_next_step/
+/Jane street/
+/scripts/
+/tmp*/
+/*.zip
 
 # Generated outputs
 artifacts/

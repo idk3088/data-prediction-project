@@ -1,0 +1,3 @@
+fold,candidate,full_weighted_r2,full_validation_rows,observed_dates,update_interval_dates,calibrated,update_count,online_training_seconds
+D,phase8d_locked,0.009634033843634815,6335560,170,10.0,True,16,1028.5560741000045
+E,phase8d_locked,0.010262967119345157,6140024,170,10.0,True,16,1442.9857561999925

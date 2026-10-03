@@ -2,3 +2,9 @@ jupyterlab==4.0.11
 nbformat==5.9.2
 pandas==2.2.2
 pyarrow==14.0.2
+lightgbm
+numba
+numpy
+matplotlib
+seaborn
+scikit-learn
