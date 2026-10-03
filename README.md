@@ -65,6 +65,7 @@ $$
 ```text
 .
 ├── notebooks/
+│   ├── 01_data_contract_and_validation.ipynb
 │   ├── 01_research_contract_and_data_inventory.ipynb
 │   └── 02_full_research_and_modeling_pipeline.ipynb
 ├── results/
@@ -75,6 +76,8 @@ $$
 ```
 
 The final notebook retains its executed outputs so the reported analysis can be reviewed without rerunning the full 47-million-row workflow. Personal filesystem paths in the public copy have been replaced with `<PROJECT_ROOT>`.
+
+The earlier `01_data_contract_and_validation.ipynb` is retained as the repository's original reusable validation template; the Jane Street-specific research is contained in the other two notebooks.
 
 ## Setup
 
